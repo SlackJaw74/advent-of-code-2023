@@ -1,50 +1,102 @@
-use std::env;
-use std::env::current_dir;
-use std::fs;
+use std::collections::HashMap;
 
-pub fn execute_day2() -> i32 {
+use crate::file_helper::get_file_contents;
 
-    let args: Vec<String> = env::args().collect();
-    let file_path = &args[1];
+// https://adventofcode.com/2023/day/2
+/* Determine which games would have been possible if the bag had been loaded with
+only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs
+of those games? */
+// Game 30: 2 blue, 4 green; 7 green, 1 blue, 1 red; 1 blue, 8 green
+pub fn execute_day_2() -> i32 {
+    let lines = get_file_contents("./input/day-2.txt");
+    const MAX_RED_COUNT: i32 = 12;
+    const MAX_GREEN_COUNT: i32 = 13;
+    const MAX_BLUE_COUNT: i32 = 14;
+    let mut color_hash_map: HashMap<&str, i32> = HashMap::new();
+    color_hash_map.insert("red", MAX_RED_COUNT);
+    color_hash_map.insert("green", MAX_GREEN_COUNT);
+    color_hash_map.insert("blue", MAX_BLUE_COUNT);
 
-    let root = current_dir().expect("failed to get current dir");
-    let full_path = root.join(file_path);
-
-    println!("In file {}", file_path);
-    println!("In file {}", full_path.display());
-
-    let contents = fs::read_to_string(full_path)
-        .expect("Should have read the file, dog!");
-
-    let lines: Vec<&str> = contents.split("\n").collect();
     let mut total = 0;
+
     for line in lines {
-        total = total + get_number(line);
-    }
-    return total;
-}
+        let parts = line.split(":").collect::<Vec<_>>();
+        let game_part = *parts.get(0).expect("expected game part");
+        let game_number = game_part
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .get(1)
+            .expect("expected game number")
+            .to_string();
 
+        let games_part = *parts.get(1).expect("expected games");
+        let games = games_part.split(";").collect::<Vec<_>>();
+        let mut all_games_valid = true;
+        for game in games {
+            let colors = game.split(",").collect::<Vec<_>>();
 
-fn get_number(value: &str) -> i32 {
-
-    let mut first_number_set = vec![];
-    let mut first_number_found = false;
-    for character in value.chars() {
-        if character.is_ascii_digit() {
-            if (!first_number_found) {
-                first_number_found = true;
-                // push first digit twice in case there isn't a second digit
-                first_number_set.push(character);
-                first_number_set.push(character);
-                continue;
+            for color in colors {
+                let color_set = color.trim().split_whitespace().collect::<Vec<_>>();
+                let color_name = color_set.get(1).expect("expected color!");
+                let color_count = color_set.get(0).expect("expected count for color!");
+                let color_max_value = color_hash_map
+                    .get(color_name)
+                    .unwrap_or_else(|| panic!("color not found {}", color_name));
+                if color_count.parse::<i32>().unwrap() > *color_max_value {
+                    all_games_valid = false;
+                    break;
+                }
             }
-            if first_number_set.len().eq(&2) {
-                first_number_set.remove(1);
+            if !all_games_valid {
+                break;
             }
-            first_number_set.push(character);
+        }
+
+        if all_games_valid {
+            let game_value = game_number.parse::<i32>().unwrap();
+            total += game_value;
         }
     }
 
-    let number_string = first_number_set.iter().cloned().collect::<String>();
-    return number_string.parse::<i32>().unwrap();
+    return total;
+}
+//Game 1: 2 blue, 3 red; 3 green, 3 blue, 6 red; 4 blue, 6 red; 2 green, 2 blue, 9 red; 2 red, 4 blue
+pub fn execute_day_2_b() -> i32 {
+    let lines = get_file_contents("./input/day-2.txt");
+
+    let mut total = 0;
+
+    for line in lines {
+        let mut color_hash_map: HashMap<String, i32> = HashMap::new();
+        color_hash_map.insert("red".to_string(), 1);
+        color_hash_map.insert("green".to_string(), 1);
+        color_hash_map.insert("blue".to_string(), 1);
+        let parts = line.split(":").collect::<Vec<_>>();
+        let games_part = parts.get(1).expect("expected games");
+        let games = games_part.split(";").collect::<Vec<_>>();
+        for game in games {
+            let colors = game.split(",").collect::<Vec<_>>();
+
+            for color in colors {
+                let color_set = color.trim().split_whitespace().collect::<Vec<_>>();
+                let color_name = color_set.get(1).expect("expected color!");
+                let color_count = color_set.get(0).expect("expected count for color!");
+                let color_max_value = color_hash_map
+                    .get(*color_name)
+                    .unwrap_or_else(|| panic!("color not found {}", color_name));
+                if color_count.parse::<i32>().unwrap() > *color_max_value {
+                    color_hash_map
+                        .insert(color_name.to_string(), color_count.parse::<i32>().unwrap());
+                }
+            }
+        }
+        // calculate power = multiple each color
+        let red_value = color_hash_map["red"];
+        let blue_value = color_hash_map["blue"];
+        let green_value = color_hash_map["green"];
+        let game_power = red_value * blue_value * green_value;
+        total += game_power;
+    }
+
+    return total;
 }
