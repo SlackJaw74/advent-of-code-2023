@@ -8,6 +8,7 @@ use crate::day1::execute_day_1_b;
 use crate::day2::execute_day_2;
 use crate::day2::execute_day_2_b;
 use crate::day3::execute_day_3;
+use crate::day3::execute_day_3_b;
 
 fn main() {
     println!("Day 1a: {}", execute_day_1());
@@ -17,4 +18,5 @@ fn main() {
     println!("Day 2b: {}", execute_day_2_b());
 
     println!("Day 3a: {}", execute_day_3());
+    println!("Day 3b: {}", execute_day_3_b("./input/day-3.txt"));
 }
