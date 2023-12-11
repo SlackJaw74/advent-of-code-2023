@@ -219,11 +219,6 @@ pub struct Location {
     pub value_as_int: i32,
     pub adjacent_locations: Vec<i32>,
 }
-impl Location {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
 
 #[derive(Default, Debug, Clone)]
 pub struct Line2 {
