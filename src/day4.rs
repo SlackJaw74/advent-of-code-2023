@@ -24,7 +24,7 @@ impl Card {
     pub fn new(line: &str) -> Self {
         // Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
         let lottery_card_regex = Regex::new(
-            r"Card (?<card_number>\d): (?<winning_numbers>[\d\s]+)\|(?<ticket_numbers>[\d\s]+)",
+            r"Card[\s]+(?<card_number>[\d]+): (?<winning_numbers>[\d\s]+)\|(?<ticket_numbers>[\d\s]+)",
         )
         .unwrap();
         let captures = lottery_card_regex.captures(line).unwrap();
@@ -34,11 +34,10 @@ impl Card {
         let winning_numbers = captures
             .name("winning_numbers")
             .map(|capture| {
-                capture.as_str().trim().split(" ").map(|value| {
+                capture.as_str().trim().split(" ").flat_map(|value| {
                     value
                         .to_string()
                         .parse::<i32>()
-                        .expect("failed to parse value")
                 })
             })
             .expect("failed to get winning numbers")
@@ -52,7 +51,7 @@ impl Card {
                     temp.parse::<i32>()
                 })
             })
-            .expect("boohoo")
+            .expect("failed to get ticket numbers")
             .collect();
         Card {
             number,
@@ -63,7 +62,13 @@ impl Card {
     pub fn get_card_score(&self) -> i32 {
         let ticket_numbers = &self.ticket_numbers;
         let winning_numbers = &self.winning_numbers;
-        let card_score = ticket_numbers.intersection(winning_numbers).fold(1, |acc, _| acc + acc);
+        let card_score = ticket_numbers.intersection(winning_numbers).fold(0, |acc, _| {
+            if acc == 0 {
+                return 1;
+            } else {
+                return acc + acc;
+            }
+         });
         println!("card_score={}", card_score);
         return card_score;
     }

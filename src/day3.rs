@@ -111,7 +111,6 @@ fn parse_line_2(line: &str, index: usize) -> Line2 {
         .find_iter(&line)
         .map(|x| {
             let value = x.as_str().parse::<i32>().unwrap();
-            println!("index={}", index);
             PartNumber {
                 range: x.range(),
                 row_number: index,
