@@ -1,5 +1,3 @@
-use std::collections::vec_deque::Iter;
-use std::collections::HashMap;
 use std::ops::Range;
 
 use crate::file_helper::get_file_contents;
@@ -12,7 +10,7 @@ pub fn execute_day_5_a(file_path: &str) -> usize {
 
 pub struct Almanac {
     pub seeds: Vec<usize>,
-    pub type_maps: HashMap<String, MapType>,
+    pub type_maps: Vec<MapType>,
 }
 impl Almanac {
     pub fn new(lines: Vec<String>) -> Self {
@@ -32,56 +30,71 @@ impl Almanac {
             .split_whitespace()
             .flat_map(|x| x.parse::<usize>())
             .collect();
-        let mut type_maps: HashMap<String, MapType> = HashMap::new();
-
+        
         //let mut current_title = "Empty";
-        let filtered_iter = iter.filter(|line| !line.is_empty());
-        filtered_iter.for_each(|line| {
-            let pieces = line.split(" ").map(|x| x.to_string()).collect::<Vec<_>>();
-            let mut map_type = &mut MapType {
-                name: "Empty".to_owned(),
-                categories: vec![],
-            };
-            if pieces.len() == 2 {
-                // 2 parts = title
-                let current_title = pieces.get(0).expect("Map title expected");
-                map_type = type_maps
-                    .entry(current_title.to_string())
-                    .or_insert(MapType {
-                        name: current_title.to_string(),
+        //let filtered_iter = iter.filter(|line| !line.is_empty());
+        return iter.fold(
+            Self {
+                seeds: seeds,
+                type_maps: vec![],
+            },
+            |mut acc, line| {
+                if line.is_empty() {
+                    return acc;
+                }
+                let split_line = line.split(" ").collect::<Vec<_>>();
+                if split_line.len() == 2 {
+                    // map title
+                    let title = split_line[0];
+                    let map_type = MapType {
+                        name: title.to_owned(),
                         categories: vec![],
-                    });
-            } else {
-                let values = pieces
-                    .iter()
-                    .flat_map(|x| x.parse::<usize>())
-                    .collect::<Vec<_>>();
-                assert_eq!(
-                    values.len(),
-                    3,
-                    "Expected 3 values for category got: {}",
-                    values.len()
-                );
-                let destination_start = *values.get(0).expect("expected destination");
-                let source_start = *values.get(1).expect("Expected source");
-                let range_length = *values.get(2).expect("Expected range length");
-                let category = Category {
-                    source_category: Range {
-                        start: destination_start,
-                        end: destination_start + range_length,
-                    },
-                    destination_category: Range {
-                        start: source_start,
-                        end: source_start + range_length,
-                    },
-                };
-                map_type.add_category(category);
-            }
-        });
-        Almanac { seeds, type_maps }
+                    };
+
+                   acc.type_maps.append(&mut vec![map_type]);
+                } else {
+                    // category
+                    let map_type = acc.type_maps.iter_mut().last().expect("Should be an entry!");
+                    let values = split_line
+                        .iter()
+                        .flat_map(|x| x.parse::<usize>())
+                        .collect::<Vec<_>>();
+                    let destination_start = *values.get(0).expect("expected destination");
+                    let source_start = *values.get(1).expect("Expected source");
+                    let range_length = *values.get(2).expect("Expected range length");
+                    let category = Category {
+                        source_category: Range {
+                            start: destination_start,
+                            end: destination_start + range_length,
+                        },
+                        destination_category: Range {
+                            start: source_start,
+                            end: source_start + range_length,
+                        },
+                    };
+                    map_type.add_category(category)
+                }
+
+                return acc;
+            },
+        );
     }
 
     pub fn get_lowest_location(&self) -> usize {
+        self.seeds.iter().fold(0, |acc, seed| {
+            let source_category = self.type_maps
+                .iter()
+                .find(|x| x.name.eq("seed-to-soil"));
+
+            let category_match = source_category.expect("expected map not found")
+                .categories
+                .iter()
+                .find(|category| category.source_category.contains(seed))
+                .a;
+            category_match.
+
+            return acc;
+        });
         return self.seeds.len();
     }
 }
