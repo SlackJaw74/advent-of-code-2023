@@ -1,0 +1,6 @@
+---
+source: src/day7.rs
+assertion_line: 185
+expression: result
+---
+Greater

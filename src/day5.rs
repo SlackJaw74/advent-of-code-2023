@@ -56,9 +56,7 @@ impl Almanac {
             .split(":")
             .collect::<Vec<_>>();
 
-        println!("Getting seeds");
         let seeds = get_seeds(seeds_split, use_seed_ranges);
-        println!("seeds length: {}", seeds.len());
 
         return iter.fold(
             Self {
@@ -130,10 +128,6 @@ impl Almanac {
             .iter()
             .min()
             .expect("expected minimum");
-    }
-
-    pub fn get_lowest_location_2(&self) -> i64 {
-        return 0;
     }
 }
 

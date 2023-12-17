@@ -7,7 +7,7 @@ pub fn execute_day_6_a() -> i32 {
     let race2 = calculate_ways_to_win(82, 1011);
     let race3 = calculate_ways_to_win(84, 1110);
     let race4 = calculate_ways_to_win(92, 1487);
-    return (race1 * race2 * race3 * race4);
+    return race1 * race2 * race3 * race4;
 }
 
 pub fn execute_day_6_b() -> i32 {
@@ -33,13 +33,13 @@ mod tests {
     #[test]
     fn execute_day_6_a_test() {
         let result = execute_day_6_a();
-        assert_eq!(result, 4);
+        assert_eq!(result, 3316275);
     }
 
     #[test]
     fn execute_day_6_b_test() {
         let result = execute_day_6_b();
-        assert_eq!(result, 71503);
+        assert_eq!(result, 27102791);
     }
 
     #[test]
