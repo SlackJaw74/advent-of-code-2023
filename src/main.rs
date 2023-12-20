@@ -5,6 +5,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 mod file_helper;
 
 use crate::day1::execute_day_1;
@@ -21,6 +22,7 @@ use crate::day6::execute_day_6_a;
 use crate::day6::execute_day_6_b;
 use crate::day7::execute_day_7_a;
 use crate::day7::execute_day_7_b;
+use crate::day8::execute_day_8_a;
 
 fn main() {
     println!("Day 1a: {}", execute_day_1());
@@ -43,4 +45,6 @@ fn main() {
 
     println!("Day 7a: {}", execute_day_7_a("./input/day-7.txt"));
     println!("Day 7b: {}", execute_day_7_b("./input/day-7.txt"));
+
+    println!("Day 8a: {}", execute_day_8_a("./input/day-8.txt"));
 }
