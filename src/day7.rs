@@ -159,7 +159,6 @@ pub fn score_hand_with_joker(sorted_hand_value: &str) -> i32 {
         .chars()
         .into_iter()
         .fold(vec![], |mut acc, char| {
-            println!("char {}", char);
             if !acc.contains(&(char, 0)) {
                 acc.push((char, 0));
             }
@@ -183,8 +182,6 @@ pub fn score_hand_with_joker(sorted_hand_value: &str) -> i32 {
     let updated_char_map = char_count_map
         .iter()
         .map(|(char, count)| {
-            println!("char {}", char);
-            println!("current count {}", count);
             if char.eq_ignore_ascii_case(&'J') || joker_distribution_count.eq(&0) {
                 return (char, *count);
             }
@@ -197,8 +194,6 @@ pub fn score_hand_with_joker(sorted_hand_value: &str) -> i32 {
         })
         .collect::<Vec<_>>();
 
-    println!("char_map {:?}", char_count_map);
-    println!("updated_char_map {:?}", updated_char_map);
     let five_of_a_kind = updated_char_map.iter().find(|x| (x.1).eq(&5)).is_some();
     if five_of_a_kind {
         return *HAND_RANK.get("FIVE_OF_A_KIND").expect("hand_rank value");
@@ -271,8 +266,6 @@ pub fn sort_hands_with_joker(a: &Hand, b: &Hand) -> Ordering {
         let b_rank = CARD_RANK_WITH_JOKER
             .get(&b_char.to_string())
             .expect("Some_other_value");
-        println!("a: {} {}", a_char, a_rank);
-        println!("b: {} {} ", b_char, b_rank);
         if a_rank != b_rank {
             return a_rank.cmp(&b_rank);
         }

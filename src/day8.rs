@@ -1,10 +1,11 @@
-use std::collections::HashMap;
+use lcmx::lcmx;
+use std::{collections::HashMap, num};
 
 use crate::file_helper::get_file_contents;
 
 pub struct Instructions {
     steps: Vec<char>,
-    node_map: HashMap<String, (String, String)>
+    node_map: HashMap<String, (String, String)>,
 }
 impl Instructions {
     pub fn new(lines: Vec<String>) -> Self {
@@ -43,14 +44,19 @@ impl Instructions {
     }
     pub fn traverse_path(&self) -> usize {
         println!("traversing path");
+
+        return self.find_steps_to_z("AAA");
+    }
+    pub fn find_steps_to_z(&self, start_node_name: &str) -> usize {
         let indexed_steps = &self.steps;
         let node_map = &self.node_map;
-    
         let step_count = indexed_steps.len();
         let mut current_step = 0;
-        let mut current_node_name = "AAA";
-        let mut current_node =  node_map.get(current_node_name).expect("expected starting node");
-        while !current_node_name.eq("ZZZ") {
+        let mut current_node_name = start_node_name;
+        let mut current_node = node_map
+            .get(current_node_name)
+            .expect("expected starting node");
+        while !current_node_name.ends_with("Z") {
             let step_index = current_step % step_count;
             let tuple_side = indexed_steps.get(step_index).expect("Step expected");
             if tuple_side.eq_ignore_ascii_case(&'L') {
@@ -60,25 +66,32 @@ impl Instructions {
             }
             current_step += 1;
             current_node = node_map.get(current_node_name).expect("node not found!");
-            if (current_step % 100000) == 1 {
-                print!(".");
-            }
         }
-    
+
         return current_step;
+    }
+    pub fn traverse_paths(&self) -> usize {
+        println!("traversing paths");
+        let node_map = &self.node_map;
+        let steps_per_path = node_map
+            .keys()
+            .filter(|key| key.ends_with("A"))
+            .map(|node_name| self.find_steps_to_z(node_name))
+            .collect::<Vec<_>>();
+        return lcmx(&steps_per_path).unwrap();
     }
 }
 
 pub fn execute_day_8_a(file_path: &str) -> usize {
     let lines = get_file_contents(file_path);
     let instructions = Instructions::new(lines);
-    return instructions.traverse_path();    
+    return instructions.traverse_path();
 }
 
 pub fn execute_day_8_b(file_path: &str) -> usize {
     let lines = get_file_contents(file_path);
     let instructions = Instructions::new(lines);
-    return instructions.traverse_path();    
+    return instructions.traverse_paths();
 }
 
 mod tests {
@@ -94,6 +107,12 @@ mod tests {
     #[test]
     fn execute_day_8_b_test() {
         let result = execute_day_8_b("./input/day-8-b-test.txt");
-        assert_eq!(result, 2);
+        assert_eq!(result, 6);
+    }
+
+    #[test]
+    fn execute_day_8_b_full_test() {
+        let result = execute_day_8_b("./input/day-8-b.txt");
+        assert_eq!(result, 16563603485021);
     }
 }

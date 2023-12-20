@@ -7,6 +7,7 @@ name = "advent-of-code-2023"
 version = "0.1.0"
 dependencies = [
  "insta",
+ "lcmx",
  "phf",
  "regex",
  "relative-path",
@@ -40,6 +41,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
+name = "gcdx"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c44da21b7da62032956eb3a8f0cd140378850f977843ec02ef906e1d584522be"
+
+[[package]]
 name = "insta"
 version = "1.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -57,6 +64,15 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "lcmx"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb2b9fe5cb6ab6638a9077e0bf09c806ea41fb82a70e9af158c5d3b07c7ccaab"
+dependencies = [
+ "gcdx",
+]
 
 [[package]]
 name = "libc"
